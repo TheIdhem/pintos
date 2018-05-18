@@ -23,6 +23,13 @@
    of thread.h for details. */
 #define THREAD_MAGIC 0xcd6abf4b
 
+/*list priority */
+static struct list p1_list;
+static struct list p2_list;
+static struct list p3_list;
+static struct list p4_list;
+static struct list p5_list;
+
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
@@ -494,27 +501,101 @@ alloc_frame (struct thread *t, size_t size)
 static struct thread *
 next_thread_to_run (void) 
 {
-	struct list_elem *max_io_need_elem = list_begin (&ready_list);
+	int a[10] = {2,5,4,6,8,9,10,7,8,6};
+	int min = 99999;
 	struct list_elem *e;
-	int max_io_need = -1;
-
-	if (list_empty (&ready_list)) {
-		return idle_thread;
-	} else {
-		// if any I/O thread exist, select that has max io_need
-		// if no I/O thread, select first elem in list
-		for(e = list_begin (&ready_list);
-			e != list_end (&ready_list);
+	int i;
+	int counterii = 0;
+	for (i = 0; i < 10; ++i)
+	{
+		if(a[i] < min)
+			min = a[i];
+	}
+	if (!list_empty (&p5_list)){
+		int counter = 0;
+		for(e = list_begin (&p5_list);
+			e != list_end (&p5_list);
+			e = list_next (e)) {
+			if(counter == min){
+				list_remove(e);
+				return list_entry (e, struct thread, elem);
+			}
+			counter = counter + 1;
+		}
+		counter = 0;
+	}
+	else if(!list_empty (&p4_list)){
+		int minimom = 9999;
+		struct list_elem *elimom;
+		for(e = list_begin (&p4_list);
+			e != list_end (&p4_list);
 			e = list_next (e)) {
 				struct thread *thread = list_entry (e, struct thread, elem);
-				if (thread->io_need != 0 && thread->io_need > max_io_need) {
-				  max_io_need_elem = e;
-				  max_io_need = thread->io_need;
-				}
+				if(thread -> priority < minimom)
+					elimom = e;
 			}
-		list_remove(max_io_need_elem);
-		return list_entry(max_io_need_elem, struct thread, elem);
+		list_remove(elimom);
+		return list_entry(elimom, struct thread, elem);
 	}
+	else if(!list_empty (&p3_list)){
+		e = list_begin (&p3_list);
+		list_remove(e);
+		return list_entry(e, struct thread, elem);
+	}
+	else if(!list_empty (&p2_list)){
+		int counter = 0;
+		for(e = list_begin (&p2_list);
+			e != list_end (&p2_list);
+			e = list_next (e)) {
+			if(counter == min){
+				list_remove(e);
+				return list_entry (e, struct thread, elem);
+			}
+			counter = counter + 1;
+		}
+		counter = 0;
+	}
+	else if(!list_empty (&p1_list)){
+		while(true){
+			int i;
+			int counterool = 0;
+			counterii = counterii + 1;
+			for (i = 0; i < 100000; ++i);
+			for(e = list_begin (&p1_list);
+			e != list_end (&p1_list);
+			e = list_next (e)) {
+				if(counterool == counterii){
+					if(a[counterii]<8)
+						list_remove(e);
+					else
+						a[counterii] = a[counterii] - 8;
+					return list_entry (e, struct thread, elem);
+				}
+				counterool = counterool + 1;
+			}
+		}
+	}
+	// struct list_elem *max_io_need_elem = list_begin (&ready_list);
+	// struct list_elem *e;
+	// int max_io_need = -1;
+
+	// if (list_empty (&ready_list)) {
+	// 	return idle_thread;
+	// } else {
+	// 	// if any I/O thread exist, select that has max io_need
+	// 	// if no I/O thread, select first elem in list
+	// 	for(e = list_begin (&ready_list);
+	// 		e != list_end (&ready_list);
+	// 		e = list_next (e)) {
+	// 			struct thread *thread = list_entry (e, struct thread, elem);
+	// 			if (thread->io_need != 0 && thread->io_need > max_io_need) {
+	// 			  max_io_need_elem = e;
+	// 			  max_io_need = thread->io_need;
+	// 			}
+	// 		}
+	// 	list_remove(max_io_need_elem);
+	// 	return list_entry(max_io_need_elem, struct thread, elem);
+	// }
 }
 
 /* Completes a thread switch by activating the new thread's page

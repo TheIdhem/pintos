@@ -12,7 +12,7 @@
 void syscall_init (void);
 static void syscall_handler (struct intr_frame *);
 void get_arg (struct intr_frame *f, int *arg, int n);
-
+static void sys_add_process();
 void
 syscall_init (void) 
 {
@@ -77,4 +77,8 @@ void get_arg (struct intr_frame *f, int *arg, int n)
         ptr = (int *) f->esp + i + 1;
         arg[i] = *ptr;
     }
+}
+
+static void sys_add_process() {
+    printf("sikiiiiim :| \n");
 }
